@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         딸깍 복사기📎
+// @name         딸깍 복사기 (SnapCopy)
 // @namespace    http://tampermonkey.net/
-// @version      3.0
-// @description  지정된 텍스트와 프리셋을 함께 복사하는 스크립트
+// @version      3.2
+// @description  지정된 텍스트와 화면의 내용을 마크다운 형태로 깔끔하게 함께 복사해 주는 스크립트
 // @author       Anonymous
 // @match        *://crack.wrtn.ai/*
 // @require      https://unpkg.com/turndown/lib/turndown.browser.umd.js
@@ -25,29 +25,21 @@
     });
     turndownService.use(turndownPluginGfm.gfm);
 
-    // 줄바꿈 태그 변환
+    // [핵심 수정 1] 시각적 줄바꿈을 마크다운이 인식할 수 있는 명시적 줄바꿈(\n\n)으로 변환
     turndownService.addRule('br', {
         filter: 'br',
         replacement: function () {
-            return '\n';
+            return '\n\n';
         }
     });
 
-    // P 태그 변환 시 단일 줄바꿈 적용
-    turndownService.addRule('paragraph', {
-        filter: 'p',
-        replacement: function (content) {
-            return content + '\n';
-        }
-    });
-
-    // 인용구 변환 시 공백 제거
+    // [핵심 수정 2] 인용구(>) 변환 시 불필요한 공백을 완전히 제거하여 바로 붙도록 설정
     turndownService.addRule('blockquote', {
         filter: 'blockquote',
         replacement: function (content) {
             content = content.replace(/^\n+|\n+$/g, '');
-            content = content.replace(/^/gm, '>');
-            return content + '\n';
+            content = content.replace(/^/gm, '>'); 
+            return '\n\n' + content + '\n\n';
         }
     });
 
@@ -74,8 +66,8 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 99999;
-            padding: 15px;
+            z-index: 99999; 
+            padding: 15px; 
             box-sizing: border-box;
         }
 
@@ -97,10 +89,10 @@
         #preset-modal-content {
             background: var(--modal-bg);
             color: var(--modal-text);
-            width: 100%;
+            width: 100%; 
             max-width: 400px;
-            max-height: 90vh;
-            overflow-y: auto;
+            max-height: 90vh; 
+            overflow-y: auto; 
             border-radius: 12px;
             padding: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
@@ -124,10 +116,10 @@
             background: var(--input-bg);
             border: 1px solid var(--input-border);
             color: var(--modal-text);
-            padding: 10px;
+            padding: 10px; 
             border-radius: 6px;
             box-sizing: border-box;
-            font-size: 16px;
+            font-size: 16px; 
             transition: background 0.3s, border 0.3s, color 0.3s;
         }
         .preset-input-group textarea {
@@ -142,15 +134,15 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 16px; 
         }
         .preset-btn-add:hover { background: #45a049; }
-
+        
         #preset-list {
             display: flex;
             flex-direction: column;
             gap: 10px;
-            max-height: 40vh;
+            max-height: 40vh; 
             overflow-y: auto;
             border-top: 1px solid var(--list-border);
             padding-top: 15px;
@@ -169,7 +161,7 @@
             margin-top: 4px;
             cursor: pointer;
             flex-shrink: 0;
-            width: 18px;
+            width: 18px; 
             height: 18px;
         }
         .preset-item-info {
@@ -196,7 +188,7 @@
             background: #f44336;
             color: white;
             border: none;
-            padding: 6px 10px;
+            padding: 6px 10px; 
             border-radius: 4px;
             cursor: pointer;
             font-size: 12px;
@@ -208,7 +200,7 @@
             background: var(--btn-close-bg);
             color: var(--btn-close-text);
             border: none;
-            padding: 12px;
+            padding: 12px; 
             border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
@@ -222,9 +214,9 @@
             align-items: center;
             border: 1px solid #a0a0a0 !important;
             border-radius: 9999px;
-            height: 32px;
+            height: 32px; 
             background: rgba(255, 255, 255, 0.4);
-            margin-right: 8px !important;
+            margin-right: 8px !important; 
             overflow: hidden;
             flex-shrink: 0;
             z-index: 10;
@@ -234,7 +226,7 @@
             align-items: center;
             justify-content: center;
             height: 100%;
-            width: 36px;
+            width: 36px; 
             background: transparent;
             border: none;
             cursor: pointer;
@@ -250,11 +242,11 @@
             height: 18px;
             background: #a0a0a0 !important;
         }
-
+        
         @media (prefers-color-scheme: dark) {
-            .wrtn-preset-group {
-                border-color: #555 !important;
-                background: rgba(0, 0, 0, 0.2);
+            .wrtn-preset-group { 
+                border-color: #555 !important; 
+                background: rgba(0, 0, 0, 0.2); 
             }
             .wrtn-preset-btn { color: #ddd; }
             .wrtn-preset-btn:hover { background: rgba(255, 255, 255, 0.1); }
@@ -280,7 +272,7 @@
             <div id="preset-modal-content">
                 <h2>설정 관리</h2>
                 <div class="preset-input-group">
-                    <input type="text" id="new-preset-title" placeholder="설정 제목 (예: 현대물)" />
+                    <input type="text" id="new-preset-title" placeholder="설정 제목 (예: 설정 1)" />
                     <textarea id="new-preset-content" placeholder="내용을 입력해 주십시오."></textarea>
                     <button class="preset-btn-add" id="btn-add-preset">추가하기</button>
                 </div>
@@ -355,13 +347,13 @@
         });
     }
 
-    // 6. 텍스트 복사 로직
+    // 6. 텍스트 복사 로직 (줄바꿈 양식 완벽 보존)
     async function handleCopy(event) {
         const button = event.currentTarget;
-
+        
         let container = button.closest('.flex.flex-col.gap-2.w-full') || button.closest('.flex.flex-col');
         let contentDiv = null;
-
+        
         if (container) {
             contentDiv = container.querySelector('.wrtn-markdown');
         }
@@ -373,6 +365,7 @@
 
         const clone = contentDiv.cloneNode(true);
 
+        // 숨겨진 텍스트 줄바꿈을 명시적 <br> 태그로 변환하여 보존
         const walker = document.createTreeWalker(clone, NodeFilter.SHOW_TEXT, null, false);
         const textNodes = [];
         let node;
@@ -395,7 +388,9 @@
         });
 
         let articleText = turndownService.turndown(clone.innerHTML);
-        articleText = articleText.trim();
+        
+        // [핵심 수정 3] 과도하게 생성된 줄바꿈 기호를 정리하되, 의도된 빈 줄(3연속 이상)은 하나로 깔끔하게 압축
+        articleText = articleText.replace(/\n{3,}/g, '\n\n\n').trim();
 
         const activePreset = presets.find(p => p.isActive);
 
@@ -404,12 +399,11 @@
             return;
         }
 
-        // 특정 문장 제거 및 익명화된 구분선 적용
         const finalString = `${activePreset.content}\n\n---- 본문 내용 ----\n\n${articleText}`;
 
         try {
             await navigator.clipboard.writeText(finalString);
-
+            
             const originalHTML = button.innerHTML;
             button.innerHTML = '✅';
             setTimeout(() => { button.innerHTML = originalHTML; }, 1500);
@@ -418,7 +412,7 @@
         }
     }
 
-    // 7. 버튼 삽입 로직
+    // 7. 버튼 삽입 로직 (우측으로 위치 복구)
     function injectButtons() {
         const messageBlocks = document.querySelectorAll('.wrtn-markdown');
 
@@ -428,9 +422,9 @@
 
             const toolbar = container.querySelector('.flex.items-center.justify-between.mt-2');
             if (!toolbar) return;
-
+            
             if (toolbar.classList.contains('preset-injected')) return;
-
+            
             const btnGroup = document.createElement('div');
             btnGroup.className = 'wrtn-preset-group';
 
@@ -457,14 +451,15 @@
             btnGroup.appendChild(divider);
             btnGroup.appendChild(copyBtn);
 
-            const leftGroup = toolbar.querySelector('.flex-row.gap-2.items-center, .space-x-2');
-            if (leftGroup) {
-                leftGroup.prepend(btnGroup);
+            // [핵심 수정 4] 사용자의 요청대로 우측 아이콘 뭉치를 정확히 찾아 맨 앞에 배치
+            const rightArea = toolbar.lastElementChild;
+            if (rightArea && rightArea.classList.contains('flex')) {
+                rightArea.prepend(btnGroup); 
             } else {
-                toolbar.prepend(btnGroup);
+                toolbar.appendChild(btnGroup);
             }
-
-            toolbar.classList.add('preset-injected');
+            
+            toolbar.classList.add('preset-injected'); 
         });
     }
 
@@ -476,7 +471,7 @@
         if (observerTimeout) clearTimeout(observerTimeout);
         observerTimeout = setTimeout(() => {
             injectButtons();
-        }, 300);
+        }, 300); 
     });
 
     observer.observe(document.body, {
