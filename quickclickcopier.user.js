@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         딸깍 복사기📎
+// @name         딸깍 복사기 (SnapCopy)
 // @namespace    http://tampermonkey.net/
 // @version      3.2
 // @description  지정된 텍스트와 화면의 내용을 마크다운 형태로 깔끔하게 함께 복사해 주는 스크립트
@@ -272,7 +272,7 @@
             <div id="preset-modal-content">
                 <h2>설정 관리</h2>
                 <div class="preset-input-group">
-                    <input type="text" id="new-preset-title" placeholder="설정 제목 (예: 현대물)" />
+                    <input type="text" id="new-preset-title" placeholder="설정 제목 (예: 설정 1)" />
                     <textarea id="new-preset-content" placeholder="내용을 입력해 주십시오."></textarea>
                     <button class="preset-btn-add" id="btn-add-preset">추가하기</button>
                 </div>
@@ -399,7 +399,7 @@
             return;
         }
 
-        const finalString = `${activePreset.content}\n\n---- 본문 내용 ----\n\n${articleText}`;
+        const finalString = `${activePreset.content}\n\n---- 이하 번역할 내용 ----\n\n${articleText}`;
 
         try {
             await navigator.clipboard.writeText(finalString);
