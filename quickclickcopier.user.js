@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         딸깍 복사기 (SnapCopy)
+// @name         딸깍 복사기 🏷
 // @namespace    http://tampermonkey.net/
 // @version      3.2
 // @description  지정된 텍스트와 화면의 내용을 마크다운 형태로 깔끔하게 함께 복사해 주는 스크립트
